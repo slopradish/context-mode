@@ -1,7 +1,7 @@
 import{createRequire as __cmRequire}from"node:module";if(typeof process.getBuiltinModule!=="function")process.getBuiltinModule=(id)=>__cmRequire(import.meta.url)(id);
 
 // src/entries/run.ts
-import { basename as basename2 } from "node:path";
+import { basename as basename3 } from "node:path";
 
 // src/core/contracts/constants.ts
 var SERVER_KEY = "context-mode";
@@ -184,6 +184,8 @@ var HOST_SESSION_ENV = Object.freeze({ "claude-code": "CLAUDE_CODE_SESSION_ID" }
 var NODE_MIN = "24.15.0";
 var DATA_ROOT = "~/.context-mode";
 var REQUIRE_SECURITY_ENV = "CONTEXT_MODE_REQUIRE_SECURITY";
+var PROJECT_PLUGIN_SCOPES = Object.freeze(["local", "project"]);
+var PLUGIN_SCOPE_RANK = Object.freeze({ local: 0, project: 1, user: 2, managed: 2 });
 var MCP_HINT_EVERY_DEFAULT = 10;
 function readHintEvery(raw) {
   if (raw === void 0 || raw.trim() === "") return MCP_HINT_EVERY_DEFAULT;
@@ -405,7 +407,7 @@ var REPORT_ENV_ENUMS = Object.freeze({
 
 // src/core/tools/run-wrapper.ts
 import { randomUUID } from "node:crypto";
-import { dirname as dirname3, join as join5 } from "node:path";
+import { dirname as dirname4, join as join5 } from "node:path";
 
 // src/adapters/claude-code.ts
 var TOOL_NAME_PREFIX = "mcp__plugin_context-mode_context-mode__";
@@ -3378,7 +3380,7 @@ function moreLine(intent, label) {
 }
 
 // src/core/policy/decide.ts
-import { resolve as resolve2 } from "node:path";
+import { resolve as resolve3 } from "node:path";
 
 // src/core/policy/lexer.ts
 var OPS = ["&&", "||", ";;", "|&", ";", "|", "&", "(", ")"];
@@ -4660,7 +4662,7 @@ function psDumpFiles(script, cwd) {
 import { join as join2 } from "node:path";
 
 // src/core/project/config-dir.ts
-import { join, posix, win32 } from "node:path";
+import { basename, dirname, join, posix, resolve as resolve2, win32 } from "node:path";
 var { mkdirSync: mkdirSync2, realpathSync } = process.getBuiltinModule("node:fs");
 function homeDirOf(env, platform = process.platform) {
   const set = (v) => v !== void 0 && v !== "";
@@ -5003,7 +5005,7 @@ function readPath(input) {
 }
 function userDenyHit(canonical, input, cwd, rules) {
   if (rules.length === 0) return null;
-  const readRule = (p) => matchesAnyDenyPattern(resolve2(cwd, p), rules, { tool: READ, projectDir: cwd });
+  const readRule = (p) => matchesAnyDenyPattern(resolve3(cwd, p), rules, { tool: READ, projectDir: cwd });
   if (canonical === BASH) {
     const cmd = str(input.command);
     return cmd === void 0 ? null : matchesAnyDenyPattern(cmd, rules);
@@ -5114,7 +5116,7 @@ function read(ev, row, input) {
   if (!present(input.offset) && !present(input.limit)) {
     const p = readPath(input);
     if (p !== void 0) {
-      const abs = resolve2(ev.cwd, p);
+      const abs = resolve3(ev.cwd, p);
       const size = fileSize(abs);
       if (size > OUTPUT_CAP) return deny(READ_DENY_MESSAGE(abs, size, row.toolNamePrefix));
     }
@@ -5127,7 +5129,7 @@ function shellDump(cmds, cwd, row) {
   let verdict = null;
   for (const c of cmds) {
     const name = c.argv0.toLowerCase();
-    if (name === CD_COMMAND && c.args.length === 1 && c.insideConstruct === void 0) dir = resolve2(dir, c.args[0]);
+    if (name === CD_COMMAND && c.args.length === 1 && c.insideConstruct === void 0) dir = resolve3(dir, c.args[0]);
     if (c.redirectsToFile || c.endsInBoundedSink || c.pipesOut === true || c.insideConstruct !== void 0) continue;
     if (!has(SHELL_DUMP_COMMANDS, name)) continue;
     const d = dumpTarget(name, c.args);
@@ -5136,7 +5138,7 @@ function shellDump(cmds, cwd, row) {
       verdict = ALLOW;
       continue;
     }
-    const abs = resolve2(dir, d.file);
+    const abs = resolve3(dir, d.file);
     const size = fileSize(abs);
     if (size > OUTPUT_CAP) return deny(READ_DENY_MESSAGE(abs, size, row.toolNamePrefix));
   }
@@ -5207,10 +5209,10 @@ function dumpTarget(name, args) {
 }
 
 // src/core/project/resolve.ts
-import { basename, dirname as dirname2, join as join4, resolve as resolve3 } from "node:path";
+import { basename as basename2, dirname as dirname3, join as join4, resolve as resolve4 } from "node:path";
 
 // src/core/project/contain.ts
-import { dirname, sep as sep2 } from "node:path";
+import { dirname as dirname2, sep as sep2 } from "node:path";
 var { realpathSync: realpathSync2 } = process.getBuiltinModule("node:fs");
 function real(p) {
   try {
@@ -5235,7 +5237,7 @@ function commonRoot(paths) {
     n = i;
   }
   let q = first;
-  while (components(q).length > n && dirname(q) !== q) q = dirname(q);
+  while (components(q).length > n && dirname2(q) !== q) q = dirname2(q);
   return q;
 }
 
@@ -5402,9 +5404,9 @@ function gitDirs(dir) {
     const gitDir = gitDirAt(join4(cur, GIT_DIR_NAME));
     if (gitDir !== null) {
       const common = firstLine(join4(gitDir, GIT_COMMONDIR_FILE));
-      return { commonDir: realpathSync3.native(common === null ? gitDir : resolve3(gitDir, common)), worktree: cur, start };
+      return { commonDir: realpathSync3.native(common === null ? gitDir : resolve4(gitDir, common)), worktree: cur, start };
     }
-    const up = dirname2(cur);
+    const up = dirname3(cur);
     if (up === cur) return { commonDir: null, start };
     cur = up;
   }
@@ -5417,7 +5419,7 @@ function gitDirAt(dotGit) {
     } else {
       const line = firstLine(dotGit);
       if (line === null || !line.startsWith(GITDIR_FILE_PREFIX)) return null;
-      gitDir = resolve3(dirname2(dotGit), line.slice(GITDIR_FILE_PREFIX.length));
+      gitDir = resolve4(dirname3(dotGit), line.slice(GITDIR_FILE_PREFIX.length));
     }
   } catch {
     return null;
@@ -5442,9 +5444,9 @@ function git(dir, args) {
   return r.stdout.split("\n").filter((l) => l !== "");
 }
 function containmentRootOf(dir, commonDir) {
-  const repoDir = basename(commonDir) === GIT_DIR_NAME ? dirname2(commonDir) : commonDir;
+  const repoDir = basename2(commonDir) === GIT_DIR_NAME ? dirname3(commonDir) : commonDir;
   const worktrees = git(dir, ["worktree", "list", "--porcelain"]).filter((l) => l.startsWith(GIT_WORKTREE_LINE_PREFIX)).map((l) => l.slice(GIT_WORKTREE_LINE_PREFIX.length));
-  return commonRoot([dirname2(repoDir), ...worktrees]);
+  return commonRoot([dirname3(repoDir), ...worktrees]);
 }
 function resolveProject(agent, src) {
   const source = sourceOf(agent);
@@ -5630,10 +5632,10 @@ function startArgv(argv) {
   return sh === null ? null : [sh, ...argv];
 }
 function runProcess(argv, o) {
-  return new Promise((resolve4) => {
+  return new Promise((resolve5) => {
     const isWin2 = process.platform === "win32";
     const start = startArgv(argv);
-    if (start === null) return resolve4(NOT_STARTED);
+    if (start === null) return resolve5(NOT_STARTED);
     let child;
     try {
       child = spawn(start[0], start.slice(1), {
@@ -5647,7 +5649,7 @@ function runProcess(argv, o) {
         windowsHide: true
       });
     } catch {
-      return resolve4(NOT_STARTED);
+      return resolve5(NOT_STARTED);
     }
     const stdoutChunks = [];
     const stderrChunks = [];
@@ -5672,7 +5674,7 @@ function runProcess(argv, o) {
       settled = true;
       clearTimeout(timer);
       o.signal.removeEventListener("abort", onAbort);
-      resolve4({
+      resolve5({
         stdout: Buffer.concat(stdoutChunks),
         stderr: Buffer.concat(stderrChunks),
         exitCode,
@@ -6120,7 +6122,7 @@ async function runWrapperMain(argv, env) {
     let text;
     try {
       const { sourceId } = indexText(db, project, sessionId, sourceLabel(command), combined, "text");
-      const more = moreLine2(dirname3(argv[1] ?? ""), sourceId, description);
+      const more = moreLine2(dirname4(argv[1] ?? ""), sourceId, description);
       const picked = selectChunks(db, sourceId, description, OUTPUT_CAP - bytes(head) - bytes(more) - 2);
       text = head + "\n" + picked.text + (picked.more === null ? "" : "\n" + more);
     } finally {
@@ -6154,5 +6156,5 @@ async function searchWrapperMain(argv, _env) {
 }
 
 // src/entries/run.ts
-var main = basename2(process.argv[1] ?? "") === SEARCH_WRAPPER_FILE ? searchWrapperMain : runWrapperMain;
+var main = basename3(process.argv[1] ?? "") === SEARCH_WRAPPER_FILE ? searchWrapperMain : runWrapperMain;
 void main(process.argv, process.env);

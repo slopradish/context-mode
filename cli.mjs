@@ -242,6 +242,8 @@ var NODE_MIN = "24.15.0";
 var DATA_ROOT = "~/.context-mode";
 var HOST_PLUGINS_DIR_NAME = "plugins";
 var INSTALLED_PLUGINS_FILE = "installed_plugins.json";
+var PROJECT_PLUGIN_SCOPES = Object.freeze(["local", "project"]);
+var PLUGIN_SCOPE_RANK = Object.freeze({ local: 0, project: 1, user: 2, managed: 2 });
 var MCP_HINT_EVERY_DEFAULT = 10;
 function readHintEvery(raw) {
   if (raw === void 0 || raw.trim() === "") return MCP_HINT_EVERY_DEFAULT;
@@ -4418,7 +4420,7 @@ ${i2}
 }).prompt();
 
 // src/core/project/config-dir.ts
-import { join as join2, posix, win32 } from "node:path";
+import { basename, dirname as dirname2, join as join2, posix, resolve, win32 } from "node:path";
 
 // src/core/contracts/errors.ts
 var ERROR_TEXT = Object.freeze({
@@ -4554,7 +4556,7 @@ import path3 from "node:path";
 
 // src/core/ops/host-config.ts
 import { existsSync as existsSync2, readFileSync } from "node:fs";
-import { dirname as dirname2, join as join3 } from "node:path";
+import { dirname as dirname3, join as join3 } from "node:path";
 
 // node_modules/eslint-visitor-keys/lib/visitor-keys.js
 var KEYS2 = {
@@ -7371,7 +7373,7 @@ function detectV1(agent, home, scope = {}) {
 
 // src/core/ops/plugin-root.ts
 import { existsSync as existsSync4, readdirSync as readdirSync3, readFileSync as readFileSync3, realpathSync as realpathSync2 } from "node:fs";
-import { dirname as dirname3, isAbsolute, join as join5, sep } from "node:path";
+import { dirname as dirname4, isAbsolute, join as join5, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/core/ops/doctor-config.ts
@@ -8155,7 +8157,7 @@ function askCodexHome(env) {
   }
   return void 0;
 }
-function sameDir(a2, b3, platform) {
+function sameDir(a2, b3, platform = process.platform) {
   if (platform !== "win32") return path10.posix.normalize(a2) === path10.posix.normalize(b3);
   const norm = (p3) => {
     const bare = p3.startsWith(WIN_VERBATIM_PREFIX) ? p3.slice(WIN_VERBATIM_PREFIX.length) : p3;
@@ -8206,15 +8208,21 @@ function pluginHooksFromReply(m3, pluginId) {
   }
   return out2;
 }
-function listPluginHooks(env, pluginId, cwd) {
+async function listPluginHooks(env, pluginId, cwd) {
+  const r2 = await askPluginHooks(env, pluginId, cwd);
+  return r2.kind === "list" ? r2.hooks : void 0;
+}
+function askPluginHooks(env, pluginId, cwd) {
   const bin = whichBin("codex", env);
-  if (!bin) return Promise.resolve(void 0);
-  return new Promise((resolve) => {
+  if (!bin) return Promise.resolve({ kind: "absent" });
+  return new Promise((resolve2) => {
+    let asked;
+    const done_ = (hooks) => hooks === void 0 ? { kind: "silent" } : { kind: "list", hooks, codexHome: asked };
     let f2;
     try {
       f2 = spawnForm(bin, ["app-server"], env);
     } catch {
-      resolve(void 0);
+      resolve2({ kind: "silent" });
       return;
     }
     const child = spawn(f2.command, f2.args, { env, cwd, stdio: ["pipe", "pipe", "ignore"], windowsVerbatimArguments: f2.windowsVerbatimArguments, windowsHide: true });
@@ -8224,7 +8232,7 @@ function listPluginHooks(env, pluginId, cwd) {
     let result;
     const settle = () => {
       clearTimeout(grace);
-      resolve(result);
+      resolve2(done_(result));
     };
     let grace;
     const finish2 = (v) => {
@@ -8269,6 +8277,7 @@ function listPluginHooks(env, pluginId, cwd) {
         }
         if (!isObj3(m3)) continue;
         if (m3.id === 1) {
+          asked = codexHomeFromReply(line);
           send({ method: "initialized" });
           send({ id: 2, method: "hooks/list", params: { cwds: [cwd] } });
         } else if (m3.id === 2) finish2(pluginHooksFromReply(m3, pluginId));
@@ -8347,12 +8356,12 @@ function frame(buf) {
 function listCopilotHooks(env, file, cwd) {
   const bin = whichBin("copilot", env);
   if (!bin) return Promise.resolve(void 0);
-  return new Promise((resolve) => {
+  return new Promise((resolve2) => {
     let f2;
     try {
       f2 = spawnForm(bin, ["--server", "--stdio", "--no-auto-update"], env);
     } catch {
-      resolve(void 0);
+      resolve2(void 0);
       return;
     }
     const child = spawn2(f2.command, f2.args, { env, cwd, stdio: ["pipe", "pipe", "ignore"], windowsVerbatimArguments: f2.windowsVerbatimArguments, windowsHide: true });
@@ -8364,7 +8373,7 @@ function listCopilotHooks(env, file, cwd) {
       clearTimeout(timer);
       child.stdin.destroy();
       child.kill();
-      resolve(v);
+      resolve2(v);
     };
     const timer = setTimeout(() => finish2(void 0), ASK_TIMEOUT_MS2);
     child.on("error", () => finish2(void 0));
@@ -8873,7 +8882,7 @@ function copyCheck(row, pkgDir) {
   return { name: "copy", ok: false, detail: `${c3.host} runs context-mode ${old}, the installed package is ${pkg}; run ${c3.bin} ${c3.refresh.join(" ")}` };
 }
 function mcpCheck(cmd, env) {
-  return new Promise((resolve) => {
+  return new Promise((resolve2) => {
     const child = spawn3(cmd[0], cmd.slice(1), { env, stdio: ["pipe", "pipe", "ignore"], detached: process.platform !== "win32", windowsHide: true });
     const reap = () => {
       child.kill();
@@ -8885,7 +8894,7 @@ function mcpCheck(cmd, env) {
       clearTimeout(timer);
       process.off("exit", reap);
       child.kill();
-      resolve({ name: "mcp", ok, detail });
+      resolve2({ name: "mcp", ok, detail });
     };
     const timer = setTimeout(() => done(false, "no MCP answer before timeout"), VERIFY_TIMEOUT_MS);
     child.on("error", (e) => done(false, e.message));
