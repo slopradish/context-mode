@@ -2,6 +2,22 @@
 
 **The other half of the context problem.**
 
+> [!IMPORTANT]
+> ## Why this fork exists — OpenCode 2 (V2 plugin API) support
+> OpenCode's V2-era plugin loader requires a default export with an `id` and a `setup` function and rejects the V1 hooks-factory contract (`Plugin must export a default definition with an id and an effect or setup function`), so upstream `context-mode` silently fails to load there. This fork adds a V2 adapter (**verified live on OpenCode 1.14.28**): plugin loads cleanly, all `ctx_*` tools register and execute in-process, tool/context/compaction hooks and usage capture work — with no new runtime dependencies. The V1/KiloCode implementation is unchanged and both contracts coexist in one entrypoint. Something is broken when using the npm package with OpenCode 1.14+? Use this fork:
+>
+> ```jsonc
+> // opencode.jsonc
+> {
+>   "plugin": [
+>     "C:/path/to/cloned/slopradish/context-mode"
+>   ]
+> }
+> // then: npm install && npm run build inside that clone
+> ```
+>
+> The PR-able branch is `feat/opencode-v2` (kept one clean commit for upstream merge); upstream currently has issues/PRs disabled, so `main` carries the fix until then.
+
 [![users](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fmksglu%2Fcontext-mode%40main%2Fstats.json&query=%24.message&label=users&color=brightgreen)](https://www.npmjs.com/package/context-mode) [![npm](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fmksglu%2Fcontext-mode%40main%2Fstats.json&query=%24.npm&label=npm&color=blue)](https://www.npmjs.com/package/context-mode) [![marketplace](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2Fmksglu%2Fcontext-mode%40main%2Fstats.json&query=%24.marketplace&label=marketplace&color=blue)](https://github.com/mksglu/context-mode) [![GitHub stars](https://img.shields.io/github/stars/mksglu/context-mode?style=flat&color=yellow)](https://github.com/mksglu/context-mode/stargazers) [![GitHub forks](https://img.shields.io/github/forks/mksglu/context-mode?style=flat&color=blue)](https://github.com/mksglu/context-mode/network/members) [![Last commit](https://img.shields.io/github/last-commit/mksglu/context-mode?color=green)](https://github.com/mksglu/context-mode/commits) [![License: ELv2](https://img.shields.io/badge/License-ELv2-blue.svg)](LICENSE)
 [![Discord](https://img.shields.io/discord/1478479412700909750?label=Discord&logo=discord&color=5865f2)](https://discord.gg/DCN9jUgN5v)
 [![Hacker News #1](https://img.shields.io/badge/Hacker%20News-%231%20%E2%80%A2%20570%2B%20points-ff6600?logo=ycombinator&logoColor=white)](https://news.ycombinator.com/item?id=47193064)
