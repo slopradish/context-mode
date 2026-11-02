@@ -4,7 +4,7 @@
 
 > [!IMPORTANT]
 > ## Why this fork exists — OpenCode 2 (V2 plugin API) support
-> OpenCode's V2-era plugin loader requires a default export with an `id` and a `setup` function and rejects the V1 hooks-factory contract (`Plugin must export a default definition with an id and an effect or setup function`), so upstream `context-mode` silently fails to load there. This fork adds a V2 adapter (**verified live on OpenCode 1.14.28**): plugin loads cleanly, all `ctx_*` tools register and execute in-process, tool/context/compaction hooks and usage capture work — with no new runtime dependencies. The V1/KiloCode implementation is unchanged and both contracts coexist in one entrypoint. Something is broken when using the npm package with OpenCode 1.14+? Use this fork:
+> OpenCode's V2-era plugin loader requires a default export with an `id` and a `setup` function and rejects the V1 hooks-factory contract (`Plugin must export a default definition with an id and an effect or setup function`), so upstream `context-mode` silently fails to load there. This fork adds a V2 adapter (**verified live on OpenCode Desktop's bundled V2 CLI, v2.2.5, and its server**): plugin loads cleanly, all `ctx_*` tools register and execute in-process, tool/context/compaction hooks and usage capture work — with no new runtime dependencies. The V1/KiloCode implementation is unchanged and both contracts coexist in one entrypoint. Loading the npm package with OpenCode Desktop or a V2-era CLI and seeing the plugin error out? Use this fork:
 >
 > ```jsonc
 > // opencode.jsonc
