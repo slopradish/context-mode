@@ -1,319 +1,342 @@
 # Context Mode
 
-**Keeping tool output out of a coding agent's context window: a local plugin for 10 agents, and the Gateway that works on the whole request.**
+**A free, local plugin that keeps tool output out of your coding agent's context window. 10 agents, zero telemetry, free forever.**
 
-[![npm downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.npmjs.org%2Fdownloads%2Fpoint%2Flast-year%2Fcontext-mode&query=%24.downloads&label=npm%20downloads%2C%20last%20365%20days&color=blue)](https://www.npmjs.com/package/context-mode) [![GitHub stars](https://img.shields.io/github/stars/mksglu/context-mode?style=flat&color=yellow)](https://github.com/mksglu/context-mode) [![Hacker News 570+ points](https://img.shields.io/badge/Hacker%20News-570%2B%20points-ff6600?logo=ycombinator&logoColor=white)](https://news.ycombinator.com/item?id=47193064) [![GitHub Trending](https://img.shields.io/badge/GitHub-Trending-black?logo=github)](https://github.com/uibm/trending-watcher/issues?q=%22mksglu%2Fcontext-mode%22) [![Discord](https://img.shields.io/discord/1478479412700909750?label=Discord&logo=discord&color=5865f2)](https://discord.gg/DCN9jUgN5v) [![License: ELv2](https://img.shields.io/badge/License-ELv2-blue.svg)](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/LICENSE)
+[![npm downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.npmjs.org%2Fdownloads%2Fpoint%2Flast-year%2Fcontext-mode&query=%24.downloads&label=npm%20downloads%2C%20last%20365%20days&color=blue)](https://www.npmjs.com/package/context-mode) [![GitHub stars](https://img.shields.io/github/stars/mksglu/context-mode?style=flat&color=yellow)](https://github.com/mksglu/context-mode) [![Hacker News 570+ points](https://img.shields.io/badge/Hacker%20News-570%2B%20points-ff6600?logo=ycombinator&logoColor=white)](https://news.ycombinator.com/item?id=47193064) [![GitHub Trending](https://img.shields.io/badge/GitHub-Trending-black?logo=github)](https://github.com/uibm/trending-watcher/issues?q=%22mksglu%2Fcontext-mode%22) [![Discord](https://img.shields.io/discord/1478479412700909750?label=Discord&logo=discord&color=5865f2)](https://discord.gg/DCN9jUgN5v) [![License: ELv2](https://img.shields.io/badge/License-ELv2-blue.svg)](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/LICENSE)
 
-> **Context Mode Gateway** takes the same idea from tool output to the whole conversation. It is an optional hosted service that works next to this plugin: Recall keeps long sessions searchable, and Memory shares what your agents learn across sessions and tools. The plugin stays free, local and open source. [See how the Gateway works](https://contextmode.ai/docs/how-saving-works)
+> **Context Mode Gateway** takes the same idea from tool output to the whole conversation. It is an optional hosted service that works next to this plugin: Gateway Recall keeps long sessions searchable, and Gateway Memory shares what your agents learn across sessions and tools. The plugin stays free and local, with its source open on GitHub. [See how the Gateway works](https://contextmode.ai/docs/how-saving-works?utm_source=github&utm_medium=readme&utm_content=quote)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/hero-dark.png">
-  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/hero-light.png" alt="Context Mode: tool output stays out of context. 10 coding agents, 9 MCP tools, 98.8% of output bytes saved (median of 25 rows with 10 KB or more of raw output).">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/hero-dark.png">
+  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/hero-light.png" alt="Context Mode plugin: free and local, for 10 coding agents, zero telemetry, your data stays on your machine. 99.4% of output bytes saved (median of 36 rows with 10 KB or more of raw output).">
 </picture>
 
-**Figure 1.** Context Mode at a glance. The 98.8% is the median over the 25 bench rows with 10 KB or more of raw output, 5 runs each.
+**Contents:** [Why](#why) · [Install](#install) · [Supported agents](#supported-agents) · [Use cases](#use-cases) · [Benchmarks](#benchmarks) · [How it works](#how-it-works) · [Tools](#tools) · [Security and privacy](#security-and-privacy) · [Context Mode Gateway](#context-mode-gateway) · [Star history](#star-history) · [License](#license) · [Community](#community)
 
-<p align="center">
-<sub>Starred by engineers at</sub>
-<br><br>
-<a href="#"><img src="https://img.shields.io/badge/Microsoft-141414?style=flat" alt="Microsoft" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Google-141414?style=flat&logo=google&logoColor=white" alt="Google" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Meta-141414?style=flat&logo=meta&logoColor=white" alt="Meta" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Amazon-141414?style=flat" alt="Amazon" /></a>
-<a href="#"><img src="https://img.shields.io/badge/IBM-141414?style=flat" alt="IBM" /></a>
-<a href="#"><img src="https://img.shields.io/badge/NVIDIA-141414?style=flat&logo=nvidia&logoColor=white" alt="NVIDIA" /></a>
-<a href="#"><img src="https://img.shields.io/badge/ByteDance-141414?style=flat&logo=bytedance&logoColor=white" alt="ByteDance" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Stripe-141414?style=flat&logo=stripe&logoColor=white" alt="Stripe" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Datadog-141414?style=flat&logo=datadog&logoColor=white" alt="Datadog" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Salesforce-141414?style=flat" alt="Salesforce" /></a>
-<a href="#"><img src="https://img.shields.io/badge/GitHub-141414?style=flat&logo=github&logoColor=white" alt="GitHub" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Red%20Hat-141414?style=flat&logo=redhat&logoColor=white" alt="Red Hat" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Supabase-141414?style=flat&logo=supabase&logoColor=white" alt="Supabase" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Canva-141414?style=flat" alt="Canva" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Notion-141414?style=flat&logo=notion&logoColor=white" alt="Notion" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Hasura-141414?style=flat&logo=hasura&logoColor=white" alt="Hasura" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Framer-141414?style=flat&logo=framer&logoColor=white" alt="Framer" /></a>
-<a href="#"><img src="https://img.shields.io/badge/Cursor-141414?style=flat&logo=cursor&logoColor=white" alt="Cursor" /></a>
-</p>
-
-## Abstract
+## Why
 
 A coding agent reads files, runs commands and fetches pages, and every result goes into its context window.
-One Playwright snapshot is 57.5 KB; one access log is 46.2 KB. The window fills, the agent compacts, and it forgets what it was doing.
-Context Mode runs the tool work in a local sandbox, keeps the full output in a per-project SQLite index, and returns what the agent asks for.
-On the 25 bench rows with 10 KB or more of raw output, it cut the bytes that reach the context by a median of 98.8%, measured with `ctx_bytes` against `raw_bytes`, 5 runs each.
-Context Mode Gateway, an optional hosted service, takes the same idea to the whole conversation and all your agents. On a pre-registered long session with a 200K window it cut cost from $4.86 to $3.04 (2026-10-04) (-37.6%).
-You can use both layers together. This paper gives the method, the numbers with their raw files, and the test setup behind each one.
+Context Mode runs that work in a local sandbox, keeps the full output in a SQLite index on your machine, and gives the agent the part it asks for.
 
-## 1. The problem
-
-Each tool result goes into the context window whole. Table 1 lists real outputs from the bench, and what Context Mode returns for each.
-
-**Table 1.** Raw output against the reply the agent sees (median of 5 runs, bench of 2026-10-31).
-
-| Tool output | Raw | Reply | Cut |
-|---|---:|---:|---:|
-| Playwright page snapshot | 57,521 B | 315 B | 99.5% |
-| 20 GitHub issues | 60,310 B | 1,156 B | 98.1% |
-| Access log, 500 requests | 46,216 B | 171 B | 99.6% |
-| `npm install` log | 37,761 B | 451 B | 98.8% |
-| Big source file | 61,576 B | 489 B | 99.2% |
-| Large git log | 191,120 B | 153 B | 99.9% |
-| Docs page through WebFetch | 215,354 B | 435 B | 99.8% |
-
-Rule for every headline number in this paper: rows with 10 KB or more of raw output, median per category.
-The full results file has [every row, including small outputs, where the cut is smaller](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/results/2026-10-31-darwin-arm64.md).
-
-## 2. Results
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/fig-saving-dark.png">
-  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/fig-saving-light.png" alt="Bar chart: median output bytes saved per category for rows of 10 KB or more. Sandbox 99.3%, Batch 93.1%, Externalize 92.3%, Hook redirect 99.8%, Session total 98.8%.">
-</picture>
-
-**Figure 2.** Median bytes saved per category, rows of 10 KB or more.
-
-**Table 2.** Bytes kept out of context, by category (rule: raw output of 10 KB or more, median per category).
-
-| Category | What runs | Rows | Median cut |
-|---|---|---:|---:|
-| a. Sandbox | `ctx_execute` on a file or command | 10 | 99.3% |
-| c. Batch | `ctx_batch`: many commands, then search | 2 | 93.1% |
-| d. Externalize | Host tool output over the cap, indexed whole | 4 | 92.3% |
-| f. Hook redirect | A big Read, curl or WebFetch sent to the sandbox | 5 | 99.8% |
-| g. Session total | One full scripted session | 1 | 98.8% |
-
-Search replies (category b) return text on purpose; they are in the full file. Bench on 2.0.0-next.8, macOS arm64, 2026-10-31.
-Reproduce: `cd bench && node run.mjs`. Method and every data file: [bench/README.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/README.md), [bench/evidence/](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/evidence/README.md).
-The plugin numbers are bytes; the dollar numbers come from the Gateway runs in section 8.
-
-### 2.1 Case studies
-
-**Case 1. A browser snapshot.** Problem: one Playwright snapshot is 57,521 B, and an agent takes many per task.
-Action: the agent runs the snapshot through `ctx_execute` and prints the fields it needs.
-Result: 315 B reach the context, a 99.5% cut, measured over 5 runs.
-
-**Case 2. A docs page.** Problem: a WebFetch of the SQLite FTS5 page returns 215,354 B.
-Action: the `PreToolUse` hook denies the fetch and routes it to `ctx_index`, which keeps the page, and `ctx_search`, which returns the part asked for.
-Result: a 435 B reply instead of 215,354 B, a 99.8% cut. The hook took 54 ms.
-
-**Case 3. A long session (Gateway).** Task: a long Claude Code session on a 200K window.
-Action: the same task through Context Mode Gateway with Recall, 3 pairs, with a rule fixed before the run.
-Result: cost fell from $4.86 to $3.04 (2026-10-04) (-37.6%). 3 of 3 pairs passed.
-
-### 2.2 Longer sessions
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/fig-oss-dark.png">
-  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/fig-oss-light.png" alt="A session grows, the context stays small. The PreToolUse hook sends a tool call to ctx_execute or ctx_index; the full output goes into context.db and a small reply returns. At compaction a snapshot keeps the state, and ctx_resume and ctx_search read it back.">
-</picture>
-
-**Figure 3.** Each tool call: the hook sends large output to the sandbox or the index, the full copy goes into `context.db`, and the agent gets a small reply. At compaction: a snapshot of at most 2,048 B keeps the state, and `ctx_resume` and `ctx_search` read it back.
-
-The context grows with each reply, and the replies stay small. Bench of 2026-10-31, median of 5 runs, [bench/results/2026-10-31-darwin-arm64.json](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/results/2026-10-31-darwin-arm64.json):
-
-- Debugging session, 8 real outputs and 3 searches: 274.7 KB raw, 3.4 KB entered the context. Row [g-session-total](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/g-overhead/README.md#g-session-total).
-- Long session, 40 outputs, then compaction: a 432.5 KB transcript, a 2.0 KB `ctx_resume` block. Row [e-long-session](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/e-continuity/README.md#e-long-session).
-- One large log: 651.2 KB of output, a 15.3 KB reply; `ctx_search` finds its first, middle and last line (3 of 3). Row [d-synth-1m](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/d-externalize/README.md#d-synth-1m).
+- **Free forever.** Use it at home and at work, free of charge, under a source-available license.
+- **Runs on your machine.** The hooks, the sandbox and search run as local processes next to your agent.
+- **The plugin keeps your data on your machine.** Every index lives in `~/.context-mode`: one `context.db` per project.
+- **Zero telemetry.** The plugin keeps all usage data on your machine. A CI test keeps its short list of network calls fixed: see [Security and privacy](#security-and-privacy).
+- **Works offline after install.** Sandbox runs, file indexing and search use local SQLite and your own runtimes.
+- **Small replies.** On the 36 bench rows with 10 KB or more of raw output, the plugin's median reply is 99.4% smaller than the raw output.
 
 ## Install
 
-Use your agent's own install command. You need Node 24.15.0 or later (v2 uses the built-in `node:sqlite`). On Windows you also need Git for Windows: the shell tools run in Git Bash, and `context-mode doctor` check D11 (shell) checks for it.
+> [!IMPORTANT]
+> You need Node 24.15.0 or later. On Windows you also need Git for Windows: the shell tools run in Git Bash, and `context-mode doctor` check D11 (shell) checks for it.
 
-| Agent | Install | Update |
-|---|---|---|
-| Claude Code | `claude plugin marketplace add mksglu/context-mode#release`, then `claude plugin install context-mode@context-mode` | `claude plugin update context-mode@context-mode` |
-| Codex | `codex plugin marketplace add mksglu/context-mode@release`, then `codex plugin add context-mode@context-mode` | `codex plugin marketplace upgrade context-mode` |
-| Gemini CLI | `gemini extensions install https://github.com/mksglu/context-mode --ref release` | `gemini extensions update context-mode` |
-| Qwen Code | `qwen extensions install https://github.com/mksglu/context-mode:context-mode --ref release` | `qwen extensions update context-mode` |
-| Pi | `pi install npm:context-mode@next` | `pi update --extensions` |
-| OpenCode | `opencode plugin add context-mode@next` (1.19: `opencode plugin context-mode@next --global`) | `opencode plugin update` (1.19: `opencode plugin context-mode@next --global --force`) |
+Open your agent and copy its own install command. Each block also has the update, check and remove steps.
+`release` and `next` are the 2.0 channels; each command below already names the right one.
 
-Until v2 is on `main`, `main` holds the old build (1.0.169), so the four GitHub-source rows name the `release` branch with each agent's own syntax.
+<details open id="install-claude-code"><summary><b>Claude Code</b></summary>
 
+```sh
+claude plugin marketplace add mksglu/context-mode#release
+claude plugin install context-mode@context-mode
+```
+Update: `claude plugin update context-mode@context-mode`. Check: `context-mode doctor --agents claude-code`. Remove: `context-mode setup --remove --agents claude-code`. Guide: [docs/install/claude-code.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/claude-code.md).
+</details>
+<details open id="install-codex"><summary><b>Codex</b></summary>
+
+```sh
+codex plugin marketplace add mksglu/context-mode@release
+codex plugin add context-mode@context-mode
+```
+Update: `codex plugin marketplace upgrade context-mode`. Check: `context-mode doctor --agents codex`. Remove: `context-mode setup --remove --agents codex`. Guide: [docs/install/codex.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/codex.md).
+</details>
+<details open id="install-gemini"><summary><b>Gemini CLI</b></summary>
+
+```sh
+gemini extensions install https://github.com/mksglu/context-mode --ref release
+```
+Update: `gemini extensions update context-mode`. Check: `context-mode doctor --agents gemini`. Remove: `context-mode setup --remove --agents gemini`, then `gemini extensions uninstall context-mode`. Guide: [docs/install/gemini.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/gemini.md).
+</details>
+<details id="install-qwen"><summary><b>Qwen Code</b></summary>
+
+```sh
+qwen extensions install https://github.com/mksglu/context-mode:context-mode --ref release
+```
+Update: `qwen extensions update context-mode`. Check: `context-mode doctor --agents qwen`. Remove: `context-mode setup --remove --agents qwen`, then `qwen extensions uninstall context-mode`. Guide: [docs/install/qwen.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/qwen.md).
+</details>
+<details id="install-pi"><summary><b>Pi</b></summary>
+
+```sh
+pi install npm:context-mode@next
+```
+Update: `pi update --extensions`. Check: `context-mode doctor --agents pi`. Remove: `context-mode setup --remove --agents pi`. Guide: [docs/install/pi.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/pi.md).
+</details>
+<details id="install-opencode"><summary><b>OpenCode</b></summary>
+
+```sh
+opencode plugin add context-mode@next
+```
+Update: `opencode plugin update`. Check: `context-mode doctor --agents opencode`. Remove: `opencode plugin remove context-mode@next`, then `context-mode setup --remove --agents opencode`. Guide: [docs/install/opencode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/opencode.md).
+</details>
+<details id="install-copilot-cli"><summary><b>Copilot CLI</b></summary>
+
+```sh
+npm i -g context-mode@next
+context-mode setup --agents copilot-cli
+```
+Update: `context-mode upgrade`. Check: `context-mode doctor --agents copilot-cli`. Remove: `context-mode setup --remove --agents copilot-cli`. Guide: [docs/install/copilot-cli.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/copilot-cli.md).
+</details>
+<details id="install-kiro"><summary><b>Kiro</b></summary>
+
+```sh
+npm i -g context-mode@next
+context-mode setup --agents kiro
+```
+Update: `context-mode upgrade`. Check: `context-mode doctor --agents kiro`. Remove: `context-mode setup --remove --agents kiro`. Guide: [docs/install/kiro.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/kiro.md).
+</details>
+<details id="install-vscode"><summary><b>VS Code (Copilot)</b></summary>
+
+```sh
+npm i -g context-mode@next
+context-mode setup --agents vscode
+```
+Update: `context-mode upgrade`. Check: `context-mode doctor --agents vscode`. Remove: `context-mode setup --remove --agents vscode`. Guide: [docs/install/vscode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/vscode.md).
+</details>
+<details id="install-zcode"><summary><b>ZCode</b></summary>
+
+```sh
+npm i -g context-mode@next
+context-mode setup --agents zcode
+```
+Update: `context-mode upgrade`. Check: `context-mode doctor --agents zcode`. Remove: `context-mode setup --remove --agents zcode`. Guide: [docs/install/zcode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/zcode.md).
+</details>
+
+The four GitHub-source commands name the `release` branch in each agent's own syntax.
+Already installed from GitHub on `main`? Each agent page has the steps to switch to the `release` ref: see "Already installed from GitHub?" in [Claude Code](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/claude-code.md#already-installed-from-github), [Codex](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/codex.md#already-installed-from-github), [Gemini CLI](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/gemini.md#already-installed-from-github) and [Qwen Code](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/qwen.md#already-installed-from-github).
+<!--
 After v2 is on main: `claude plugin marketplace add mksglu/context-mode`, `codex plugin marketplace add mksglu/context-mode`, `gemini extensions install https://github.com/mksglu/context-mode`, `qwen extensions install https://github.com/mksglu/context-mode:context-mode`
+`next` is the v2 prerelease tag on npm.
+Switch day: remove the `release` and `next` lines and the "Already installed from GitHub?" line; drop `#release`, `@release`, `--ref release` and `@next` from the commands.
+Agent note, native install then update per agent: claude-code: `claude plugin marketplace add mksglu/context-mode#release`, then `claude plugin install context-mode@context-mode`; update `claude plugin update context-mode@context-mode`. codex: `codex plugin marketplace add mksglu/context-mode@release`, then `codex plugin add context-mode@context-mode`; update `codex plugin marketplace upgrade context-mode`. gemini: `gemini extensions install https://github.com/mksglu/context-mode --ref release`; update `gemini extensions update context-mode`. qwen: `qwen extensions install https://github.com/mksglu/context-mode:context-mode --ref release`; update `qwen extensions update context-mode`. pi: `pi install npm:context-mode@next`; update `pi update --extensions`. opencode: `opencode plugin add context-mode@next`; update `opencode plugin update`.
+-->
 
-Already installed from GitHub on `main`? Each agent page has the steps to switch to the `release` ref: see "Already installed from GitHub?" in [Claude Code](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/claude-code.md#already-installed-from-github), [Codex](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/codex.md#already-installed-from-github), [Gemini CLI](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/gemini.md#already-installed-from-github) and [Qwen Code](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/qwen.md#already-installed-from-github).
-
-Copilot CLI, Kiro, VS Code and ZCode install through npm, which works for every agent:
+The npm route works for every agent:
 
 ```sh
 npm i -g context-mode@next
 context-mode setup
 ```
 
-`next` is the v2 prerelease tag on npm. `latest` points to the old release, so add `@next` to get v2.
-Restart the agent, then check: `context-mode doctor` (or `/ctx-doctor` in the agent). Each check prints PASS, or FAIL with the command that fixes it.
-`context-mode setup` is the fallback and the repair. It shows a plan, applies it, and rolls back an agent that fails.
-Uninstall: `context-mode setup --remove && npm rm -g context-mode`. Details: [docs/install/README.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/README.md).
+`next` is the 2.0 tag on npm, so add `@next`.
+`context-mode setup` is also the repair. It shows a plan, saves your earlier config, then applies the plan; if a step stops, it puts the saved config back.
+Uninstall: `context-mode setup --remove && npm rm -g context-mode`. Details: [docs/install/README.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/README.md).
 
-Every agent gets hooks, the MCP server and the skills. The Install column is the agent's own install command, or the npm route for the other four agents.
+> [!TIP]
+> Restart the agent, then run `context-mode doctor` (or `/ctx-doctor` in the agent). Each check prints PASS or a fix command.
+
+## Supported agents
+
+Every agent gets hooks, the MCP server and the plugin skills (files in `skills/`). The Install column is the agent's own install command, or the npm route for the other four agents.
 
 <!-- agents:install:start (node build/readme-agents.mjs --write) -->
 | Agent | Hooks | MCP | Skills | Install | Guide |
 |---|---|---|---|---|---|
-| Claude Code | yes, package | yes | yes | `claude plugin install context-mode@context-mode` | [docs/install/claude-code.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/claude-code.md#install) |
-| Codex | yes, hook file | yes | yes | `codex plugin add context-mode@context-mode` | [docs/install/codex.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/codex.md#install) |
-| Copilot CLI | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/copilot-cli.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/copilot-cli.md#install) |
-| Gemini CLI | yes, package | yes | yes | `gemini extensions install https://github.com/mksglu/context-mode --ref release` | [docs/install/gemini.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/gemini.md#install) |
-| Kiro | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/kiro.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/kiro.md#install) |
-| OpenCode | yes, in-process | yes | yes | `opencode plugin add context-mode@next` | [docs/install/opencode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/opencode.md#install) |
-| Pi | yes, in-process | in-process | yes | `pi install npm:context-mode@next` | [docs/install/pi.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/pi.md#install) |
-| Qwen Code | yes, package | yes | yes | `qwen extensions install https://github.com/mksglu/context-mode:context-mode --ref release` | [docs/install/qwen.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/qwen.md#install) |
-| VS Code (Copilot) | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/vscode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/vscode.md#install) |
-| ZCode | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/zcode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/zcode.md#install) |
+| Claude Code | yes, package | yes | yes | `claude plugin marketplace add mksglu/context-mode#release`<br>`claude plugin install context-mode@context-mode` | [docs/install/claude-code.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/claude-code.md#install) |
+| Codex | yes, hook file | yes | yes | `codex plugin marketplace add mksglu/context-mode@release`<br>`codex plugin add context-mode@context-mode` | [docs/install/codex.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/codex.md#install) |
+| Copilot CLI | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/copilot-cli.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/copilot-cli.md#install) |
+| Gemini CLI | yes, package | yes | yes | `gemini extensions install https://github.com/mksglu/context-mode --ref release` | [docs/install/gemini.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/gemini.md#install) |
+| Kiro | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/kiro.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/kiro.md#install) |
+| OpenCode | yes, the plugin's own event handlers | yes | yes | `opencode plugin add context-mode@next` | [docs/install/opencode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/opencode.md#install) |
+| Pi | yes, the plugin's own event handlers | plugin inside the agent | yes | `pi install npm:context-mode@next` | [docs/install/pi.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/pi.md#install) |
+| Qwen Code | yes, package | yes | yes | `qwen extensions install https://github.com/mksglu/context-mode:context-mode --ref release` | [docs/install/qwen.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/qwen.md#install) |
+| VS Code (Copilot) | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/vscode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/vscode.md#install) |
+| ZCode | yes, hook file | yes | yes | npm + `context-mode setup` | [docs/install/zcode.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/zcode.md#install) |
 <!-- agents:install:end -->
 
-## 3. How it works
+Hooks reach each agent in one of three ways: in the plugin package (Claude Code, Gemini CLI, Qwen Code), in a hook file (Codex, Copilot CLI, Kiro, VS Code, ZCode), or in a plugin inside the agent (OpenCode, Pi).
+The real agent binary ran our hook for Claude Code, Codex, Gemini CLI, Qwen Code, Pi, OpenCode, Copilot CLI and ZCode, in a clean temp home, logged out, with a local test model (2.0.0-next.15, the release that the record below covers).
+VS Code runs the hook command with the documented payload, and kiro-cli 2.35.2 loads all 6 hook entries.
+CI runs setup, doctor, a hook and an MCP handshake for all 10 agents from the packed package on Linux, macOS and Windows. Record: [docs/architecture/release/HOOKS-FIRE.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/architecture/release/HOOKS-FIRE.md).
+
+## Use cases
+
+Real tool output from public projects, run through Context Mode. Bench of 2026-11-01 on 2.0.0-next.23 (commit 16a4bcc5), median of 5 runs ([bench/results/2026-11-01-darwin-arm64.json](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/results/2026-11-01-darwin-arm64.json)); each source is in [bench/fixtures/data/SOURCE.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/fixtures/data/SOURCE.md).
+
+| What you do | Tool | Raw | Reaches the context | Saved |
+|---|---|---:|---:|---:|
+| [Read a browser page](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-devtools-mcp-snapshot) | Chrome DevTools MCP `take_snapshot` | 136,514 B | 463 B | 99.7% |
+| [List 40 issues](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-gh-issue-list-vite) | GitHub CLI `gh issue list --json` | 182,943 B | 850 B | 99.5% |
+| [List 25 pull requests with checks](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-gh-pr-list-vite) | GitHub CLI `gh pr list --json` | 195,471 B | 776 B | 99.6% |
+| [Look up library docs](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-context7-query-docs-vite) | Context7 `query-docs` | 6,917 B | 473 B | 93.2% |
+| [Run 1,106 tests](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-vitest-run-vite) | Vitest `vitest run --reporter=verbose` | 62,909 B | 429 B | 99.3% |
+| [Lint a source folder](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-biome-lint-vite) | Biome `biome lint --reporter=json` | 288,523 B | 577 B | 99.8% |
+| [Install a workspace](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-pnpm-install-vite) | pnpm `pnpm install --frozen-lockfile` | 14,988 B | 199 B | 98.7% |
+| [Install packages](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-npm-install-log) | npm `npm install --loglevel http` | 37,761 B | 435 B | 98.8% |
+| [Read container logs](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-docker-logs-mongo) | Docker `docker logs` | 60,374 B | 587 B | 99.0% |
+| [Plan 72 resources](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-terraform-plan) | Terraform `terraform plan` | 34,081 B | 166 B | 99.5% |
+| [Read 300 commits with file stats](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/a-sandbox/README.md#a-git-log-stat-vite) | git `git log --stat` | 164,385 B | 268 B | 99.8% |
+| [Read an 89 KB source file](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/f-hook-redirect/README.md#f-read-vite-config) | Read, sent to `ctx_execute` by the hook | 91,362 B | 375 B | 99.6% |
+| [Fetch a 265 KB docs page](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/f-hook-redirect/README.md#f-webfetch-vite-docs) | WebFetch, sent to `ctx_index` and `ctx_search` | 271,731 B | 439 B | 99.8% |
+| [Fetch a 214 KB API reply](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/f-hook-redirect/README.md#f-bash-curl-post) | curl in Bash, replaced after it runs | 219,175 B | 291 B | 99.9% |
+| [Debug for a full session: 8 outputs, 3 searches](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/g-overhead/README.md#g-session-total) | All hooks and tools | 281,261 B | 3,266 B | 98.8% |
+
+The agent gets the part it asks for. The full output stays in the local index, and `ctx_search` reads it back.
+
+## Benchmarks
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/fig-flow-dark.png">
-  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/fig-flow-light.png" alt="One tool call, step by step: the agent runs a tool, the PreToolUse hook denies a big Read and names the ctx_execute call, the MCP server runs it in the sandbox, SQLite FTS5 keeps the output, and after compaction a state block of at most 2,048 B comes back.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/fig-saving-dark.png">
+  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/fig-saving-light.png" alt="Bar chart: median output bytes saved per category for rows of 10 KB or more. Sandbox 99.5%, Batch 93.1%, Externalize 98.3%, Hook redirect 99.8%, Session total 98.8%.">
 </picture>
 
-**Figure 4.** One tool call, step by step. Output stays in the sandbox and the index; the agent gets the answer.
+Rule for every headline number in this README: rows with 10 KB or more of raw output, median of 5 runs per row, measured with `ctx_bytes` against `raw_bytes`; a category is the median of its rows; 1 KB = 1,024 B.
+All 36 such rows, the six categories below: the plugin keeps a median of 99.4% of output bytes out of the context. Bench on 2.0.0-next.23, commit 16a4bcc5 with local edits (`dirty: true` in the file), macOS arm64, 2026-11-01.
 
-Context Mode has three parts: hooks, an MCP server with nine tools, and one SQLite database per project.
+| Category | What runs | Rows | Median saved |
+|---|---|---:|---:|
+| a. Sandbox | `ctx_execute` on a file or command | 19 | 99.5% |
+| b. Retrieval | `ctx_search` over the local index | 3 | 77.2% |
+| c. Batch | `ctx_batch`: many commands, then search | 2 | 93.1% |
+| d. Externalize | Host tool output over the cap, indexed whole | 4 | 98.3% |
+| f. Hook redirect | A big Read, curl or WebFetch sent to the sandbox | 7 | 99.8% |
+| g. Session total | One full scripted session | 1 | 98.8% |
 
-### 3.1 Hooks
+Search replies (category b) return the matching text, so they keep less out. The full file lists every row, small ones too: [bench/results/2026-11-01-darwin-arm64.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/results/2026-11-01-darwin-arm64.md).
+Reproduce: `cd bench && node run.mjs`. Method and every data file: [bench/README.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/README.md), [bench/evidence/](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/evidence/README.md).
 
-The hooks listen to four events: `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`. Gemini CLI, VS Code and OpenCode also send a compaction event; each host keeps its own event names.
-`PreToolUse` checks rules in a fixed order: the user's deny list, WebFetch, curl and HTTP or build commands, then Read and shell dumps.
-Context Mode denies a full-file `Read` of a file over 16,384 B, and the deny message names the exact `ctx_execute` call to use. A `Read` with a range still runs.
-A hook always exits 0: on any error it gives the host's "allow" reply and writes one log line, so your agent keeps working. Spawned hooks time out after 5,000 ms.
+### Longer sessions
 
-### 3.2 Sandbox execution
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/fig-oss-dark.png">
+  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/fig-oss-light.png" alt="A session grows, the context stays small. The PreToolUse hook sends a tool call to ctx_execute or ctx_index; the full output goes into context.db and a small reply returns. At compaction a snapshot keeps the state, and ctx_resume and ctx_search read it back.">
+</picture>
 
-`ctx_execute` writes the script to a temp folder and runs it as a subprocess: shell, PowerShell, JavaScript, TypeScript, Python, or any runtime found on `PATH`.
-It spawns the runtime directly from an argument list, in the project folder. The default and maximum timeout is 600,000 ms; on timeout it kills the whole process group (`taskkill /F /T` on Windows).
-The child gets the parent environment minus the preload variables (`NODE_OPTIONS`, `BUN_OPTIONS`, `DENO_OPTIONS` and similar). The agent gets what the script prints, cut on a whole character.
+Each tool call: the hook sends large output to the sandbox or the index, the full copy goes into `context.db`, and the agent gets a small reply. At compaction, a snapshot of at most 2,048 B keeps the state, and `ctx_resume` and `ctx_search` read it back.
 
-### 3.3 Index and search
+- Long session, 40 outputs, then compaction: a 442,893 B transcript, a 2,019 B `ctx_resume` block ([bench/results/2026-11-01-darwin-arm64.json](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/results/2026-11-01-darwin-arm64.json), row [e-long-session](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/e-continuity/README.md#e-long-session)).
+- One large log: 666,796 B of output, 3,380 B reach the context (row [d-synth-1m](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/d-externalize/README.md#d-synth-1m)).
 
-Each output goes into SQLite FTS5 twice: a Porter-stemmed table for words, and a trigram table for paths, names and parts of words.
-`ctx_search` ranks each table with BM25 and joins the two lists with Reciprocal Rank Fusion: a hit scores 1/(60 + rank) in each list.
-On zero matches, it tries a spelling fix from the indexed words. Search covers one of three scopes: this session, this worktree (the default) or the whole project.
-Chunks are at most 4,096 B. A Markdown chunk stays inside one heading section and carries its heading path as its title. A code block that fits in a chunk stays whole; a bigger one splits on blank lines, and each piece repeats the fence.
-A reply snippet is at most 800 B, or a whole code block up to 2,048 B.
+### Speed
 
-### 3.4 Large output, run and replace
+Median of 5 runs, bench of 2026-11-01. Rows per agent and per query: [bench/results/2026-11-01-darwin-arm64.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/results/2026-11-01-darwin-arm64.md).
 
-When a host tool returns more than the cap, `PostToolUse` indexes the whole output and replaces it.
-The agent gets the best-matching whole chunks and one `ctx_search` line for the rest. Context Mode keeps the full text in the index.
+| Measure | Result |
+|---|---|
+| Hook time over a bare `node` start, per agent | 7.5 ms to 12.3 ms ([g-hook-kiro](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/g-overhead/README.md#g-hook-kiro) to [g-hook-claude-code](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/g-overhead/README.md#g-hook-claude-code)) |
+| `ctx_search`, 20 queries over 8 indexed files | 1.62 ms median, 6.70 ms max ([g-search-latency](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/g-overhead/README.md#g-search-latency)) |
+| `ctx_index`, 3 real files, 625,649 B | 150 ms per MB ([g-index-per-mb](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/g-overhead/README.md#g-index-per-mb)) |
 
-### 3.5 Session continuity
+## How it works
 
-The hooks log each prompt, edit, command, tool error, index, cost and decision.
-After a compaction the agent gets a state block of at most 2,048 B built from that log. Every line stays whole: a long line becomes a `ctx_resume(seq)` pointer that reads the full row.
-On the next prompt, a recall block of at most 2,048 B brings back the log rows that match it by BM25, always as whole rows. The same rows always give the same bytes.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/fig-flow-dark.png">
+  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/fig-flow-light.png" alt="One tool call, step by step: the agent runs a tool, the PreToolUse hook denies a big Read and names the ctx_execute call, the MCP server runs it in the sandbox, SQLite FTS5 keeps the output, and after compaction a state block of at most 2,048 B comes back.">
+</picture>
 
-### 3.6 Storage
+Context Mode has three parts: hooks, an MCP server with nine tools, and one SQLite database per project. All three run on your machine, and the data stays in `~/.context-mode`.
 
-Context Mode uses Node's built-in `node:sqlite`, so the install compiles zero native modules. Each project gets one `context.db` under `~/.context-mode`.
-The database runs in WAL mode. On close it always runs a PASSIVE checkpoint. Context Mode builds a new database under a temp name, then moves it into place in one step, so the file on disk is always complete, even after a crash. Busy timeout: 5,000 ms.
+**Hooks.** The hooks listen to four events: `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`. Gemini CLI, VS Code and OpenCode also send a compaction event; each host keeps its own event names. `PreToolUse` checks rules in a fixed order: the user's deny list, WebFetch, curl and HTTP or build commands, then Read and shell dumps. Context Mode denies a full-file `Read` of a file over 16,384 B, and the deny message names the exact `ctx_execute` call to use. A `Read` with a range still runs. A hook always exits 0: on any error it gives the host's "allow" reply and writes one log line, so your agent keeps working. Spawned hooks time out after 5,000 ms.
 
-## 4. Tools
+**Sandbox execution.** `ctx_execute` writes the script to a temp folder and runs it as a local subprocess: shell, PowerShell, JavaScript, TypeScript, Python, or any runtime found on `PATH`. It spawns the runtime directly from an argument list, in the project folder. The default and maximum timeout is 600,000 ms; on timeout it kills the whole process group (`taskkill /F /T` on Windows). The child gets the parent environment minus the preload variables (`NODE_OPTIONS`, `BUN_OPTIONS`, `DENO_OPTIONS` and similar). The agent gets what the script prints, cut on a whole character.
+
+**Index and search.** Each output goes into SQLite FTS5 twice: a Porter-stemmed table for words, and a trigram table for paths, names and parts of words. `ctx_search` ranks each table with BM25 and joins the two lists with Reciprocal Rank Fusion: a hit scores 1/(60 + rank) in each list. Before it returns an empty list, it tries a spelling fix from the indexed words. Search covers one of three scopes: this session, this worktree (the default) or the whole project. Chunks are at most 4,096 B. A Markdown chunk stays inside one heading section and carries its heading path as its title. A code block that fits in a chunk stays whole; a bigger one splits on blank lines, and each piece repeats the fence. A reply snippet is at most 800 B, or a whole code block up to 2,048 B.
+
+**Large output, run and replace.** When a host tool returns more than the cap, `PostToolUse` indexes the whole output and replaces it. The agent gets the best-matching whole chunks and one `ctx_search` line for the rest. Context Mode keeps the full text in the local index.
+
+**Session continuity.** The hooks log each prompt, edit, command, tool error, index, cost and decision. After a compaction the agent gets a state block of at most 2,048 B built from that log. Every line stays whole: a long line becomes a `ctx_resume(seq)` pointer that reads the full row. On the next prompt, a prompt match block of at most 2,048 B brings back the log rows that match it by BM25, always as whole rows. The same rows always give the same bytes.
+
+**Storage.** Context Mode uses Node's built-in `node:sqlite`, so the install is plain JavaScript. Each project gets one `context.db` under `~/.context-mode` on your machine. The database runs in WAL mode. On close it always runs a PASSIVE checkpoint. Context Mode builds a new database under a temp name, then moves it into place in one step, so the file on disk is always complete, even after a crash. Busy timeout: 5,000 ms.
+
+## Tools
 
 | Tool | What it does |
 |---|---|
 | `ctx_execute` | Runs code or a shell command in a sandbox; returns what it prints |
 | `ctx_batch` | Runs many commands, indexes the output, and searches it in one call |
 | `ctx_index` | Indexes a file, a text or a URL into the project database |
-| `ctx_search` | Searches the index; returns the matching parts |
-| `ctx_resume` | Returns the state block, or one full row by `seq` |
+| `ctx_search` | Searches the local index; returns the matching parts |
+| `ctx_resume` | Returns the plugin's local state block (at most 2,048 B), or one full row by `seq` |
 | `ctx_stats` | Shows how much output stayed out of context |
-| `ctx_doctor` | Checks the install; each FAIL line names its fix |
+| `ctx_doctor` | Checks the install; each check prints PASS or a fix command |
 | `ctx_upgrade` | Installs, upgrades or uninstalls; replaces old context-mode entries |
 | `ctx_purge` | Deletes indexed data by session, source or project |
 
-Full reference: [docs/tools.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/tools.md).
+Full reference: [docs/tools.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/tools.md).
 
-## Commands
+Commands in the agent: `/ctx-stats` shows the `ctx_stats` result, `/ctx-doctor` runs `ctx_doctor` (send its report with a defect report), and `/ctx-upgrade` runs `ctx_upgrade`, then `ctx_doctor`.
 
-| Command | What it does |
-|---|---|
-| `/ctx-stats` | Calls `ctx_stats` and shows the result |
-| `/ctx-doctor` | Calls `ctx_doctor`; use its report when you report a defect |
-| `/ctx-upgrade` | Calls `ctx_upgrade`, then `ctx_doctor` |
+## Security and privacy
 
-## 5. Harness: ten agents
-
-Every agent in the Install table gets hooks, the MCP server and the skills, through that agent's own install command.
-Hooks reach each agent in one of three ways: in the plugin package (Claude Code, Gemini CLI, Qwen Code), in a hook file (Codex, Copilot CLI, Kiro, VS Code, ZCode), or in-process (OpenCode, Pi).
-
-Live proof, written for 2.0.0-next.15: we watched the real agent binary run our hook in a clean temp home, logged out and with zero API keys, for 8 of 10 agents.
-VS Code and Kiro are at an earlier step: the VS Code hook command works with the documented payload (VS Code 1.144.0 sent 0 requests in the live run), and kiro-cli 2.35.2 loads all 6 hook entries (the live run recorded 0 hook fires).
-CI runs setup, doctor, a hook and an MCP handshake for all 10 agents from the packed package on Linux, macOS and Windows. Record: [docs/architecture/release/HOOKS-FIRE.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/architecture/release/HOOKS-FIRE.md).
-
-## 6. Performance
-
-**Table 3.** Time cost, median of 5 runs, bench of 2026-10-31.
-
-| Measure | Result |
-|---|---|
-| Hook time over a bare `node` start, per agent | 7.3 ms to 14.6 ms |
-| `ctx_search`, 20 queries over 8 indexed files | 1.73 ms median, 6.54 ms max |
-| `ctx_index`, 3 real files, 0.6 MB | 155 ms per MB |
-
-Rows per agent and per query: [docs/performance.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/performance.md).
-
-## 7. Security model
-
-- All data stays on your machine, in `~/.context-mode`: one `context.db` per project.
-- Runs fully local: SQLite FTS5 and your own runtimes.
-- Network use: npm or git (to the release repository) when you install or upgrade, `git ls-remote` in doctor (to check for a new version), and your agent's own install steps.
-- `ctx_index` fetches a URL when the agent asks for it. It blocks private and link-local addresses. It checks each address the host name points to, connects to the address it checked, and checks again at each redirect.
+- The plugin keeps all its data on your machine, in `~/.context-mode`: one `context.db` per project. `ctx_purge` deletes it by session, source or project.
+- The plugin has zero telemetry: usage data, events and crash reports stay on your machine. It uses the network at these call sites, each one started by you or your agent:
+  - `ctx_index` of a URL the agent asks for: `src/core/sandbox/fetch.ts`. It blocks private and link-local addresses, checks each address the host name points to, connects to the address it checked, and checks again at each redirect.
+  - `context-mode doctor`: `git ls-remote` to the release repository, to check for a new version (`src/core/ops/doctor-env.ts`).
+  - `ctx_upgrade`: `git clone --depth 1` of the release branch (`src/core/ops/release-fetch.ts`). `context-mode upgrade`: `npm i -g context-mode@next` (`src/cli/commands.ts`).
+  - The debug report: `gh issue create`, after you press a key (`src/cli/commands.ts`).
+  - Install and update: your agent's own install command, npm or git.
+- The guard test D-PRIVACY-NET-1 in `tests/0008-enforcement.test.mjs` scans `src` for HTTP clients, sockets, DNS lookups, git network calls and `gh` or `npm` spawns. It fails when a new call site appears outside this list, so this section stays true.
 - Doctor and the debug report remove secrets by their structure before they print.
 
-Here "sandbox" means the output stays in the sandbox, out of the context.
-Code from `ctx_execute` runs on your host as your user, with your environment (minus the preload variables), your files and your network; keep your agent's own permission prompts on.
+> [!NOTE]
+> Here "sandbox" means the output stays in the sandbox, out of the context. Code from `ctx_execute` runs on your host as your user, with your environment (minus the preload variables), your files and your network; keep your agent's own permission prompts on.
 
-## 8. Context Mode Gateway
+## Context Mode Gateway
 
-The plugin works on tool output, on your machine. Context Mode Gateway is a hosted service that works on every request, across all your agents: Recall, Memory, Skills, Search and Protect.
+The plugin works on tool output, on your machine, and it is complete on its own. Context Mode Gateway is an optional hosted service that works on every request, across all your agents. Its 11 features, the full list: Context Saving, Recall, Memory, Skills, Search, Session resume, Active Context, Instructions, Protect, Prompt caching, Live and Analytics.
 Teams add it for long sessions, shared memory and cost reports. The two work together.
 
-<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/assets/readme/gateway/overview.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/gateway/overview-1200.webp" alt="Gateway Overview: money saved, AI spend, prompt-cache discount and cost per request over 30 days" width="100%"></a>
+<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/live.mp4"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/gateway/live.webp" width="100%" alt="Gateway Live screen during a session: money saved, bytes kept out per request, history kept and sent, and a feed of each request with its cost and saving"></a>
+
+**Live.** One session as it runs: money saved this session, bytes kept out per request, history kept and sent, and a feed of each request with its cost and saving. [Full video](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/live.mp4)
+
+Docs: [How saving works](https://contextmode.ai/docs/how-saving-works?utm_source=github&utm_medium=readme&utm_content=live), [Recall](https://contextmode.ai/docs/recall?utm_source=github&utm_medium=readme&utm_content=live), [Session resume](https://contextmode.ai/docs/session-resume?utm_source=github&utm_medium=readme&utm_content=live)
+
+<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/overview.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/gateway/overview-1200.webp" alt="Gateway Overview: money saved, AI spend, prompt-cache discount and cost per request over 30 days" width="100%"></a>
 
 **Overview.** What you paid and what the Gateway saved, per day, in one view.
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/assets/readme/gateway/analytics.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/gateway/analytics-1200.webp" alt="Gateway Analytics: saved money over time, split by source" width="100%"></a><br>
-      <b>Analytics.</b> Where each saving comes from: hidden tools, archived old results, large outputs kept in the archive and trimmed context.
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/assets/readme/gateway/spend.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/gateway/spend-1200.webp" alt="Gateway Spend: spend per day by model, cost per request and cache hit rate" width="100%"></a><br>
-      <b>Spend.</b> Spend per day and per model, cost per request and the cache hit rate, to help you plan a budget.
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/assets/readme/gateway/memory.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/gateway/memory-top-1200.webp" alt="Gateway Memory: money saved by Recall and searches per day" width="100%"></a><br>
-      <b>Memory.</b> Facts and decisions carry across sessions and agents. The screen shows what Recall saved and how many searches found an answer.
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/assets/readme/gateway/skills.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/gateway/skills-1200.webp" alt="Gateway Skills: import from GitHub and the list of installed skills" width="100%"></a><br>
-      <b>Skills.</b> Add a skill once and all your clients use it when it helps. Import skills from GitHub and see the installed ones.
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center">
-      <a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/assets/readme/gateway/protect.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/gateway/protect-1200.webp" alt="Gateway Protect: a new command rule that blocks terraform destroy" width="50%"></a><br>
-      <b>Protect.</b> Rules that check each shell command before it runs. Here, a rule that stops <code>terraform destroy</code>.
-    </td>
-  </tr>
-</table>
+Docs: [How saving works](https://contextmode.ai/docs/how-saving-works?utm_source=github&utm_medium=readme&utm_content=overview)
 
-Numbers in these screenshots come from the author's own account over 30 days (Oct 3 - Nov 1, 2026), so read them as one account's usage. Click an image for the full size.
+<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/analytics.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/gateway/analytics-1200.webp" alt="Gateway Analytics: saved money over time, split by source" width="100%"></a>
 
-**Table 4.** Context Mode Gateway features, from [contextmode.ai/docs](https://contextmode.ai/docs/how-saving-works).
+**Analytics.** Where each saving comes from: hidden tools, archived old results, large outputs kept in the archive and trimmed context.
+
+Docs: [How saving works](https://contextmode.ai/docs/how-saving-works?utm_source=github&utm_medium=readme&utm_content=analytics), [Active Context](https://contextmode.ai/docs/active-context?utm_source=github&utm_medium=readme&utm_content=analytics)
+
+<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/spend.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/gateway/spend-1200.webp" alt="Gateway Spend: spend per day by model, cost per request and cache hit rate" width="100%"></a>
+
+**Spend.** Spend per day and per model, cost per request and the cache hit rate, to help you plan a budget.
+
+Docs: [Prompt caching](https://contextmode.ai/docs/prompt-caching?utm_source=github&utm_medium=readme&utm_content=spend)
+
+<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/memory.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/gateway/memory-top-1200.webp" alt="Gateway Memory: money saved by Recall and searches per day" width="100%"></a>
+
+**Memory.** Facts and decisions carry across sessions and agents. The screen shows what Recall saved and how many searches found an answer.
+
+Docs: [Memory](https://contextmode.ai/docs/memory?utm_source=github&utm_medium=readme&utm_content=memory), [Recall](https://contextmode.ai/docs/recall?utm_source=github&utm_medium=readme&utm_content=memory)
+
+<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/skills.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/gateway/skills-1200.webp" alt="Gateway Skills: import from GitHub and the list of installed skills" width="100%"></a>
+
+**Skills.** Add a skill once and all your clients use it when it helps. Import skills from GitHub and see the installed ones.
+
+Docs: [Skills](https://contextmode.ai/docs/skills?utm_source=github&utm_medium=readme&utm_content=skills)
+
+<a href="https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/gateway/protect.webp"><img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/gateway/protect-1200.webp" alt="Gateway Protect: a new command rule that blocks terraform destroy" width="100%"></a>
+
+**Protect.** Rules that check each shell command before it runs. Here, a rule that stops <code>terraform destroy</code>.
+
+Docs: [Protect](https://contextmode.ai/docs/protect?utm_source=github&utm_medium=readme&utm_content=protect)
+
+Numbers in these screens come from the author's own account over 30 days (Oct 3 - Nov 1, 2026), so read them as one account's usage. Click an image for the full size.
+
+<details>
+<summary>Gateway features, from contextmode.ai/docs</summary>
+
+Source: [contextmode.ai/docs](https://contextmode.ai/docs/how-saving-works?utm_source=github&utm_medium=readme&utm_content=features):
 
 | Feature | What it does | What you get | Details |
 |---|---|---|---|
-| Context Saving | Folds old tool output, runs data work as code (Thinking in Code), trims tool schemas, places cache marks | Tool schemas 102,784 B to 33,611 B per request (-67.3%); a tool output over 2,048 B becomes a pointer of about 285 B, with the full copy archived | Saves the most on sessions with many tool calls; A/B measured in Claude Code |
-| Recall | The model sees recent work and an index of older work; the agent searches the archive for the rest | 200K window, 2026-10-04: mean cost per session $4.86 to $3.04 (-37.6%) | Cost measured in Claude Code on Claude Opus 5.5 |
+| Context Saving | Folds old tool output, runs data work as code (Thinking in Code), trims tool schemas, places cache marks | Gateway, Claude Code, Opus 5.5: tool schemas 102,784 B to 33,611 B per request (-67.3% of bytes); a tool output over 2,048 B becomes a pointer of about 285 B, with the full copy archived | Saves the most on sessions with many tool calls; A/B measured in Claude Code |
+| Recall | The model sees recent work and an index of older work; the agent searches the archive for the rest | Gateway, Claude Code, Opus 5.5, 200K window, 2026-10-04: mean cost per session $4.86 to $3.04 (-37.6% in dollars) | Cost measured in Claude Code on Claude Opus 5.5 |
 | Memory | Each fact keeps two times: when it was true and when the Gateway learned it | Claude Code and Codex on one account share one store, tested end to end | The memory block goes into the first request of a new session |
 | Skills | A skill catalog on the Gateway for your account; it loads the skill that matches your message | The matching skill loads on the message that needs it | Import skills from GitHub; a loaded skill joins the prompt in full |
 | Search | Searches the prompts, commands and tool output that passed through, in the console and as an agent tool | Find any past prompt, command or tool output, from the console or your agent | The console searches the first 4,000 characters of each tool result |
@@ -324,47 +347,53 @@ Numbers in these screenshots come from the author's own account over 30 days (Oc
 | Prompt caching | Keeps requests cache-friendly: cache marks on the fixed part of the prompt and a cache for fetched pages | Inside the measured costs above | Uses up to 4 cache marks, the provider's maximum |
 | Live and Analytics | Shows each request and what the Gateway saved, as it happens and over time | See each request and its saving, live and over time | Covers every request that passes through the Gateway |
 
+</details>
+
 Gateway cost against Claude Code alone, Claude Opus 5.5, mean dollars per session at list price:
 
-- Six short tasks (2026-09-29): 24.5% cheaper pooled over 176 sessions (21% to 29% per task). [v3-opus55-short.json](https://contextmode.ai/benchmarks/data/v3-opus55-short.json)
-- Long Claude Code session, 200K window (2026-10-03/04): mean cost per session $4.86 to $3.04 (-37.6%). [ab.json](https://contextmode.ai/benchmarks/recall/200k-r2/ab.json)
-- We fixed the rules before each run: [contextmode.ai/docs/benchmarks](https://contextmode.ai/docs/benchmarks).
+- Six short tasks (2026-09-29): 24.5% fewer dollars pooled over 176 sessions (21% to 29% per task). [v3-opus55-short.json](https://contextmode.ai/benchmarks/data/v3-opus55-short.json?utm_source=github&utm_medium=readme&utm_content=bench)
+- Long Claude Code session, 200K window (2026-10-03/04): mean cost per session $4.86 to $3.04 (-37.6% in dollars). [ab.json](https://contextmode.ai/benchmarks/recall/200k-r2/ab.json?utm_source=github&utm_medium=readme&utm_content=bench)
+- We fixed the rules before each run: [contextmode.ai/docs/benchmarks](https://contextmode.ai/docs/benchmarks?utm_source=github&utm_medium=readme&utm_content=bench).
 
 Apps: Claude Code, Claude Desktop, Codex, Codex Desktop, T3 Code, OpenCode and Pi.
 Setup is one command, `npx @context-mode/cli`. It signs you in and writes one config change per agent (it needs Node 20.12 or later).
-Your own Claude or OpenAI account pays the model directly, at the provider's price.
+The Gateway routes to Anthropic and OpenAI. The Gateway sends your requests to its server on the way to the model. Its privacy page is at [contextmode.ai/privacy](https://contextmode.ai/privacy?utm_source=github&utm_medium=readme&utm_content=privacy).
+Keep your agent's own sandbox on next to Protect. More at [contextmode.ai](https://contextmode.ai/?utm_source=github&utm_medium=readme&utm_content=more).
 
-The Gateway routes to Anthropic and OpenAI. Requests pass through the Gateway server on their way to the model.
-Keep your agent's own sandbox on next to Protect.
-More at [contextmode.ai](https://contextmode.ai).
-
-## 9. Adoption
+## Star history
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/star-history-dark.png">
-  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.25/docs/assets/readme/star-history-light.png" alt="Line chart of cumulative GitHub stars for mksglu/context-mode since 2026-02-23. A daily job redraws it.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/star-history-dark.png">
+  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/star-history-light.png" alt="Line chart of cumulative GitHub stars for mksglu/context-mode since 2026-02-23. A daily job redraws it.">
 </picture>
 
-**Figure 5.** GitHub stars over time, from the stargazers API (GraphQL, `starredAt`). A daily job redraws the chart; the date it was read is in the chart caption.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/stargazers-dark.png">
+  <img src="https://raw.githubusercontent.com/mksglu/context-mode/v2.0.0-next.26/docs/assets/readme/stargazers-light.png" alt="Companies that stargazers of mksglu/context-mode name in their GitHub profile, Microsoft, Tencent, Alibaba, ByteDance, Google and more.">
+</picture>
 
-- **npm downloads.** The badge at the top shows all-time downloads of the npm package, read daily from the npm API ([stats.json](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/stats.json)). We have no count for plugin marketplace installs.
+Starred by engineers at these companies: each name is the company field of 2 or more stargazer profiles, read with the GitHub GraphQL API on 2026-11-01 ([data](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/assets/readme/data/stargazer-companies.json)).
+
+GitHub stars over time, from the stargazers API (GraphQL, `starredAt`). A daily job redraws the chart; the date it was read is in the chart caption.
+
+- **npm downloads.** The badge at the top shows npm downloads of the package over the last 365 days, read from the npm API ([stats.json](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/stats.json) keeps a daily copy).
 - **Hacker News.** "MCP server that reduces Claude Code context consumption by 98%" reached the front page with 570+ points and 107 comments on 2026-02-28 ([thread](https://news.ycombinator.com/item?id=47193064)).
 - **GitHub Trending.** A bot that watches GitHub Trending logged the repo there on 14 days from 2026-04-24 to 2026-10-17 ([uibm/trending-watcher](https://github.com/uibm/trending-watcher/issues?q=%22mksglu%2Fcontext-mode%22)).
-- **Companies.** Engineers at the companies under Figure 1 starred the repo.
 
 ## License
 
-[Elastic License 2.0](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/LICENSE) (ELv2), source-available. You may use, copy, change and share the code, and use it at work.
-The license keeps two uses for the licensor:
+[Elastic License 2.0](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/LICENSE) (ELv2), a source-available license. You may use, copy, change and share the code, and use it at work, free of charge.
+The license keeps three uses for the licensor:
 
-1. Offering it to others as a hosted or managed service.
-2. Removing, hiding or getting around its license notices or license key functions.
+1. Offering the software to others as a hosted or managed service that gives them a large part of its features.
+2. Moving, changing, turning off or getting around the license key functions, or removing or hiding what the license key protects.
+3. Changing, removing or hiding the licensor's license, copyright or other notices.
 
 We chose ELv2 so the source stays open to all and the hosted service stays with the project.
 
-## Support
+## Community
 
 Report a defect on [Discord](https://discord.gg/DCN9jUgN5v) with the full `/ctx-doctor` report.
-Fixes go into v2. The maintainer writes every change; send ideas and defect reports on Discord.
+The maintainer writes every change; send ideas and defect reports on Discord.
 
-Docs: [docs/install/README.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/install/README.md) (install, options, uninstall), [docs/how-it-works.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/how-it-works.md), [docs/algorithms.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/algorithms.md) (search, ranking, size limits, deny rules), [docs/tools.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/docs/tools.md), [bench/evidence/](https://github.com/mksglu/context-mode/blob/v2.0.0-next.25/bench/evidence/README.md).
+Docs: [docs/install/README.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/install/README.md) (install, options, uninstall), [docs/how-it-works.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/how-it-works.md), [docs/algorithms.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/algorithms.md) (search, ranking, size limits, deny rules), [docs/tools.md](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/docs/tools.md), [bench/evidence/](https://github.com/mksglu/context-mode/blob/v2.0.0-next.26/bench/evidence/README.md).
